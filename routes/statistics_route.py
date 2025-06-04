@@ -14,8 +14,15 @@ def register_statistics_routes(app):
                 description: Statistiken über Tiere und Besitzer
                 examples:
                     application/json:
-                        - total_animals: 5
-                        - total_owners: 2
+                        {
+                            "animals_by_genus":
+                            {
+                                "birds": 1,
+                                "mammals": 3
+                            },
+                            "total_animals": 4,
+                            "total_owners": 3
+                        }
         """
         con = get_db_connection()
         cur = con.cursor()

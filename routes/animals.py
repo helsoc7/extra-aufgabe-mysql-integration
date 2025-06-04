@@ -24,16 +24,18 @@ def register_animal_routes(app):
                 description: JSON-Liste aller Tiere
                 examples:
                     application/json:
-                        - id: 1
-                          name: Dog
-                          age: 3
-                          genus: mammals
-                          owner_id: 2
-                        - id: 2
-                          name: Cat
-                          age: 2
-                          genus: mammals
-                          owner_id: 3
+                    -
+                        id: 1
+                        name: Dog
+                        age: 3
+                        genus: mammals
+                        owner_id: 2
+                    -
+                        id: 2
+                        name: Cat
+                        age: 2
+                        genus: mammals
+                        owner_id: 3
         """
         # Daten abrufen von der DB
         con = get_db_connection() # Verbindung mit der DB
@@ -50,26 +52,27 @@ def register_animal_routes(app):
         Anzeigen eines Tieres
         ---
         parameters:
-            - name: animal_id
-              in: path
-              type: integer
-              required: true
-              description: Die ID des anzuzeigenden Tieres
+        -
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des anzuzeigenden Tieres
         responses:
             200:
                 description: JSON-Objekt von einem Tier
                 examples:
                     application/json:
-                        - id: 1
-                          name: Dog
-                          age: 3
-                          genus: mammals
-                          owner_id: 2
+                        id: 1
+                        name: Dog
+                        age: 3
+                        genus: mammals
+                        owner_id: 2
             404:
-                description: Ti¥er wurde nicht gefunden
+                description: Tier wurde nicht gefunden
                 examples:
                     application/json:
-                        - message: Tier mit der ID 7 existiert nicht
+                        message: Tier mit der ID 7 existiert nicht
         """
         animal = get_animal_by_id(animal_id)
         if animal is None:
@@ -82,14 +85,16 @@ def register_animal_routes(app):
         """
         Neues Tier hinzufügen
         ---
-        consumes:
-            - application/json
+        consumes: [application/json]
         parameters:
-            - in: body
-              name: tier
-              required: true
-              schema:
+        -
+            in: body
+            name: tier
+            required: true
+            description: name muss angegeben werden
+            schema:
                 type: object
+                required: [name]
                 properties:
                     name:
                         type: string
@@ -108,12 +113,12 @@ def register_animal_routes(app):
                 description: Tier hinzugefügt
                 examples:
                     application/json:
-                        - message: Tier wurde erfolgreich hinzugefügt
+                        message: Tier wurde erfolgreich hinzugefügt
             400:
                 description: Keine oder fehlerhafte Daten
                 examples:
                     application/json:
-                        - message: Keine oder fehlerhafte Daten übertragen
+                        message: Keine oder fehlerhafte Daten übertragen
         """
         new_animal = request.get_json() # {"name": "turtle", "age:": 100, "genus": "reptile"}
         if not new_animal or 'name' not in new_animal:
@@ -138,22 +143,23 @@ def register_animal_routes(app):
         Ein Tier löschen
         ---
         parameters:
-            - name: animal_id
-              in: path
-              type: integer
-              required: true
-              description: Die ID des zu löschenden Tieres
+        -
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des zu löschenden Tieres
         responses:
             200:
                 description: Tier wurde gelöscht
                 examples:
                     application/json:
-                        - message: Tier wurde erfolgreich gelöscht
+                        message: Tier wurde erfolgreich gelöscht
             404:
                 description: Tier wurde nicht gefunden
                 examples:
                     application/json:
-                        - message: Tier mit der ID 7 existiert nicht
+                        message: Tier mit der ID 7 existiert nicht
         """
         con = get_db_connection() 
         cur = get_cursor(con)
@@ -176,16 +182,20 @@ def register_animal_routes(app):
         Ganzes Tier ersetzen
         ---
         parameters:
-            - name: animal_id
-              in: path
-              type: integer
-              required: true
-              description: Die ID des Tiers, das ersetzt werden soll
-            - in: body
-              name: tier
-              required: true
-              schema: 
+        -
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des Tiers, das ersetzt werden soll
+        -
+            in: body
+            name: tier
+            required: true
+            description: name muss angegeben werden
+            schema: 
                 type: object
+                required: [name]
                 properties:
                     name:
                         type: string
@@ -204,12 +214,12 @@ def register_animal_routes(app):
                 description: Tier wurde aktualisiert
                 examples:
                     application/json:
-                        - message: Tier wurde komplett aktualisiert
+                        message: Tier wurde komplett aktualisiert
             404:
                 description: Tier wurde nicht gefunden
                 examples:
                     application/json:
-                        - message: Tier mit der ID 7 existiert nicht
+                        message: Tier mit der ID 7 existiert nicht
         """
         updated_animal = request.get_json() 
         if not updated_animal or 'name' not in updated_animal:
@@ -233,20 +243,21 @@ def register_animal_routes(app):
         Tier teilweise ändern (z.B. nur das Alter)
         ---
         parameters:
-            - name: animal_id
-              in: path
-              type: integer
-              required: true
-              description: Die ID des Tiers, das aktualisiert werden soll
-            - in: body
-              name: tier
-              required: anyOf
-              schema: 
+        -
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des Tiers, das aktualisiert werden soll
+        -
+            in: body
+            name: tier
+            required: true
+            description: Es muss mindestens einer der Werte angegeben werden
+            schema: 
                 type: object
+                required: anyOf
                 properties:
-                    id:
-                        type: integer
-                        example: 3
                     name:
                         type: string
                         example: elephant
@@ -256,17 +267,20 @@ def register_animal_routes(app):
                     genus:
                         type: string
                         example: mammals
+                    owner_id:
+                        type: integer
+                        example: 3
         responses:
             200:
                 description: Tier wurde geupdated
                 examples:
                     application/json:
-                        - message: Tier wurde geupdated
+                        message: Tier wurde geupdated
             404:
                 description: Tier wurde nicht gefunden
                 examples:
                     application/json:
-                        - message: Tier mit der ID 7 existiert nicht
+                        message: Tier mit der ID 7 existiert nicht
         """
         updated_animal = request.get_json() # name, age, genus
         if not updated_animal:
@@ -300,26 +314,41 @@ def register_animal_routes(app):
     @app.route("/api/animals/<int:animal_id>/owner", methods=["GET"])
     def get_owner_of_animal(animal_id):
         """
-        Zeigt den Owner eines Tieres an
+        Zeigt den Besitzer eines Tieres an
         ---
         parameters:
-            - name: animal_id
-              in: path
-              type: integer
-              required: true
-              description: Die ID des Tieres
+        - 
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des Tieres
         responses:
             200:
                 description: Besitzer-Daten oder ggf. eine Info, dass kein Besitzer zugeordnet ist
+                examples:
+                    application/json:
+                        animal: dog
+                        owner:
+                            email: schmidty@mail.de
+                            id: 2
+                            name: Anna Schmidt
+                            phone: 01896 128842
+            404:
+                description: Tier oder Besitzer mit der eingetragenen ID wurde nicht gefunden
+                examples:
+                    application/json:
+                        message: Tier mit der ID 7 existiert nicht
         """
         animal = get_animal_by_id(animal_id)
         if animal is None:
             return jsonify({"message": f"Tier mit der ID {animal_id} existiert nicht"}), 404
         if animal["owner_id"] is None:
             return jsonify({"message": "Tier hat keinen Besitzer und kann adoptiert werden"}), 200
-        owner = get_owner_by_id(animal["owner_id"])
+        owner_id = animal["owner_id"]
+        owner = get_owner_by_id(owner_id)
         if owner is None:
-            return jsonify({"message": "Besitzer nicht gefunden"}), 404
+            return jsonify({"message": f"Besitzer mit der ID {owner_id} nicht gefunden"}), 404
         
         return jsonify({
             "animal": animal["name"],
@@ -341,6 +370,19 @@ def register_animal_routes(app):
         responses:
             200:
                 description: Besitzer-Daten oder ggf. eine Info, dass kein Besitzer zugeordnet ist
+                examples:
+                    application/json:
+                        animal: dog
+                        owner:
+                            email: schmidty@mail.de
+                            id: 2
+                            name: Anna Schmidt
+                            phone: 01896 128842
+            404:
+                description: Tier oder Besitzer mit der eingetragenen ID wurde nicht gefunden
+                examples:
+                    application/json:
+                        message: Tier mit der ID 7 existiert nicht
         """
         con = get_db_connection()
         cur = get_cursor(con)
@@ -378,6 +420,33 @@ def register_animal_routes(app):
     # Tier wird wieder freigegeben, d.h. der Besitzer bzw. die owner_id wird auf Null esetzt
     @app.route("/api/animals/<int:animal_id>/release", methods=["POST"])
     def release_animal(animal_id):
+        """
+        Ein Tier freilassen (Besitzer entfernen)
+        ---
+        parameters:
+        -
+            name: animal_id
+            in: path
+            type: integer
+            required: true
+            description: Die ID des freizulassenden Tieres
+        responses:
+            200:
+                description: Tier wurde freigelassen
+                examples:
+                    application/json:
+                        message: Elephant wird nicht mehr besessen von Max Mustermann
+            400:
+                description: Tier hat keinen Besitzer
+                examples:
+                    application/json:
+                        message: Tier mit der ID 7 hat keinen Besitzer
+            404:
+                description: Tier wurde nicht gefunden
+                examples:
+                    application/json:
+                        message: Tier mit der ID 7 existiert nicht
+        """
         animal = get_animal_by_id(animal_id)
         if animal is None:
             return jsonify({"message": f"Tier mit der ID {animal_id} existiert nicht"}), 404
